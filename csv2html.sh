@@ -50,8 +50,8 @@ body, input {
 <body>
 ___EOF___
 
-echo "<input id='myInput' type='text' onkeyup='Search()' placeholder='Search'>"
-echo "<table id='myTable' border='1' width='100%' cellspacing='0' cellpadding='2' style='white-space:nowrap;'>"
+echo "<input id='mySearch' type='text' onkeyup='Search()' placeholder='Search'>"
+echo "<table id='Results' border='1' width='100%' cellspacing='0' cellpadding='2' style='white-space:nowrap;'>"
 
 cat <<___EOF___ | sqlite3 "${DB}"
 .import --csv $FNAME $TN
@@ -72,7 +72,7 @@ function Search() {
         table = document.getElementById("Results");
         tr = table.getElementsByTagName("tr");
         rows = tr.length;
-        cols = tr[1].getElementsByTagName("td").length;
+        cols = tr[1].getElementsByTagName("TD").length;
         // console.log("Rows: " + rows + ", Columns: " + cols);
         for (i = 0; i < rows; i++) {
                 holdoff = 0;
