@@ -50,7 +50,7 @@ body, input {
 <body>
 ___EOF___
 
-echo "<input id='myInput' type='text' onkeyup='myFunction()' placeholder='Search first column'>"
+echo "<input id='myInput' type='text' onkeyup='Search()' placeholder='Search'>"
 echo "<table id='myTable' border='1' width='100%' cellspacing='0' cellpadding='2' style='white-space:nowrap;'>"
 
 cat <<___EOF___ | sqlite3 "${DB}"
@@ -65,25 +65,43 @@ echo "</table>"
 
 cat <<___EOF___
 <script>
-function myFunction() {
-  var input, filter, table, tr, td, i, txtValue;
-  input = document.getElementById("myInput");
-  filter = input.value.toUpperCase();
-  table = document.getElementById("myTable");
-  tr = table.getElementsByTagName("tr");
-  for (i = 0; i < tr.length; i++) {
-    td = tr[i].getElementsByTagName("td")[0];
-    if (td) {
-      txtValue = td.textContent || td.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        tr[i].style.display = "";
-      } else {
-        tr[i].style.display = "none";
-      }
-    }
-  }
+function Search() {
+        var input, filter, table, tr, td, i, txtValue;
+        input = document.getElementById("mySearch");
+        filter = input.value.toUpperCase();
+        table = document.getElementById("Results");
+        tr = table.getElementsByTagName("tr");
+        rows = tr.length;
+        cols = tr[1].getElementsByTagName("td").length;
+        // console.log("Rows: " + rows + ", Columns: " + cols);
+        for (i = 0; i < rows; i++) {
+                holdoff = 0;
+                for (j = 0; j < cols; j++) {
+                        td = tr[i].getElementsByTagName("td")[j];
+                        if (td) {
+                                txtValue = td.textContent || td.innerText;
+                                found = txtValue.toUpperCase().indexOf(filter);
+                                if (found > -1) {
+                                        // console.log("Found: '" + filter + "' in row: " + i);
+                                        tr[i].style.display = "";
+                                        holdoff = 1;
+                                        regex = new RegExp(input, 'gi');
+                                        text = td.innerHTML;
+                                        text = text.replace(/(<mark class="highlight">|<\/mark>)/gim, '');
+                                        newtext = text.replace(regex, '<mark class="highlight">$&</mark>');
+                                        td.innetHTML = newtext;
+                                }
+                                else {
+                                        if ( holdoff == 0 ) {
+                                                tr[i].style.display = "none";
+                                        }
+                                }
+                        }
+                }
+        }
 }
 </script>
+
 
 </body>
 </html>
